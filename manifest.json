@@ -1,0 +1,8 @@
+{
+    "name": "Plugin name",
+    "name_l10ns": {},
+    "summary": "A short description for your plugin",
+    "summary_l10ns": {},
+    "version": "1.0.0",
+    "mv": 1
+}
