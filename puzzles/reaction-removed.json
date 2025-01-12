@@ -1,0 +1,13 @@
+{
+	"id": "A6UTWW",
+	"name": "Reaction removed",
+	"options": [],
+	"trigger": "MESSAGE_REACTION_REMOVE",
+	"scripts": [
+		{
+			"name": "Starboard",
+			"language": 1,
+			"code": "const starboardChannelId = guild.systemChannelId\r\nif (!starboardChannelId) return\r\n\r\nconst starEmoji = encodeURIComponent('⭐'),\r\n  starReaction = message.reactions.find(v => v.emoji === starEmoji)\r\nconst minCount = 3\r\n\r\nif (!starReaction) return\r\n\r\nconst getMessageTitle = (reactionCount) => {\r\n  if (reactionCount < 6) return { emoji: '⭐', color: 'FFAC33' }\r\n  if (reactionCount > 6 && reactionCount < 12) return { emoji: '🌟', color: 'FFD983' }\r\n  if (reactionCount > 12 && reactionCount < 24) return { emoji: '💫', color: 'FDD888' }\r\n  if (reactionCount > 24 && reactionCount < 48) return { emoji: '✨', color: 'AA8ED6' }\r\n  return { emoji: '☄', color: 'BDDDF4' }\r\n}\r\n\r\nconst messageImage = message.attachments.find(v => v.contentType.startsWith('image/'))\r\nconst messageTitle = getMessageTitle(starReaction.count),\r\n  messageData = {\r\n    content: `${messageTitle.emoji} **${starReaction.count}** | ${message.url}`,\r\n    embeds: [\r\n      {\r\n        author: {\r\n          name: member.user.username,\r\n          icon_url: member.avatar\r\n        },\r\n        description: (message.content || message.url).slice(0, 2000),\r\n        timestamp: Date.now(),\r\n        color: parseInt(messageTitle.color, 16),\r\n        image: messageImage ? { url: messageImage.url } : null\r\n      }\r\n    ]\r\n  }\r\n\r\nconst starboardMessageId = await getValue(`starboard.${message.id}`)\r\nif (!starboardMessageId) return\r\n\r\nif (starReaction.count < minCount) {\r\n  await deleteMessage(starboardChannelId, starboardMessageId)\r\n  deleteValue(`starboard.${message.id}`)\r\n} else {\r\n  await editMessage(starboardChannelId, starboardMessageId, messageData)\r\n}"
+		}
+	]
+}

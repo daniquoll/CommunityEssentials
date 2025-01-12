@@ -1,0 +1,32 @@
+{
+	"options": [],
+	"command": {
+		"type": 1,
+		"name": "lfg",
+		"description": "Looking for group",
+		"options": [
+			{
+				"type": 3,
+				"name": "game",
+				"description": "Name of the game",
+				"required": true,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "details",
+				"description": "Specify additional information",
+				"required": false,
+				"choices": []
+			}
+		]
+	},
+	"id": "1153097099454459934",
+	"scripts": [
+		{
+			"name": null,
+			"language": 1,
+			"code": "const game = command.options.find(i => i.name === 'game')\r\nconst details = command.options.find(i => i.name === 'details')\r\n\r\nif (!member.voice?.channelId) {\r\n  await reply({\r\n    content: `<@${member.user.id}>, you must be connected to a voice channel`,\r\n    ephemeral: true\r\n  })\r\n\r\n  return\r\n}\r\n\r\nawait reply({\r\n  embeds: [\r\n    {\r\n      author: {\r\n        icon_url: member.user.avatar,\r\n        name: member.user.username\r\n      },\r\n      description: details?.value ?? null,\r\n      fields: [\r\n        {\r\n          name: 'Game',\r\n          value: game.value,\r\n          inline: true\r\n        },\r\n        {\r\n          name: 'Voice channel',\r\n          value: `<#${member.voice.channelId}>`,\r\n          inline: true\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n})"
+		}
+	]
+}

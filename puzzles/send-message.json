@@ -1,0 +1,129 @@
+{
+	"options": [],
+	"command": {
+		"type": 1,
+		"name": "send-message",
+		"description": "Sends a message",
+		"options": [
+			{
+				"type": 7,
+				"name": "channel",
+				"description": "Channel to send the message to",
+				"required": false
+			},
+			{
+				"type": 3,
+				"name": "json",
+				"description": "JSON message data",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "content",
+				"description": "The content of message",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-title",
+				"description": "The title of embed",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-description",
+				"description": "The description of embed",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-url",
+				"description": "The URL of embed",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-timestamp",
+				"description": "The timestamp of embed (example: 2020/12/01)",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-color",
+				"description": "The color of embed (HEX)",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-author-name",
+				"description": "The name of the author",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-author-url",
+				"description": "The URL of the author",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-author-icon-url",
+				"description": "The icon URL of the author",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-fields",
+				"description": "Fields of embed",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-image-url",
+				"description": "The URL of the embed image",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-thumbnail-url",
+				"description": "The URL of the embed thumbnail",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-footer-text",
+				"description": "The text of the footer",
+				"required": false,
+				"choices": []
+			},
+			{
+				"type": 3,
+				"name": "embed-footer-icon-url",
+				"description": "The URL of the footer icon",
+				"required": false,
+				"choices": []
+			}
+		]
+	},
+	"id": "1326067199210688544",
+	"scripts": [
+		{
+			"name": "Prepare",
+			"language": 1,
+			"code": "const argNames = [\r\n  'channel',\r\n  'json',\r\n  'content',\r\n  'embed-title',\r\n  'embed-description',\r\n  'embed-url',\r\n  'embed-timestamp',\r\n  'embed-color',\r\n  'embed-author-name',\r\n  'embed-author-url',\r\n  'embed-author-icon-url',\r\n  'embed-fields',\r\n  'embed-image-url',\r\n  'embed-thumbnail-url',\r\n  'embed-footer-text',\r\n  'embed-footer-icon-url'\r\n]\r\n\r\nlet [\r\n  messageChannel,\r\n  messageJSON,\r\n  messageContent,\r\n  embedTitle,\r\n  embedDescription,\r\n  embedURL,\r\n  embedTimestamp,\r\n  embedColor,\r\n  embedAuthorName,\r\n  embedAuthorURL,\r\n  embedAuthorIconURL,\r\n  embedFields,\r\n  embedImageURL,\r\n  embedThumbnailURL,\r\n  embedFooterText,\r\n  embedFooterIconURL\r\n] = argNames.map(v => command.options.find(opt => opt.name === v))\r\n\r\n// Examples:\r\n// One embed field:\r\n// Field title || Field value\r\n// Two or more fields (split them using \"|||\"):\r\n// Field title 1 || Field value 1 || true ||| Field title 2 || Field value 2 || true\r\nembedFields = embedFields?.value\r\n  ?.split(/\\s*\\|{3}\\s*/)\r\n  ?.map(v => {\r\n    const [name, value, inline] = v.split(/\\s*\\|{2}\\s*/)\r\n    return { name, value, inline: inline === 'true' }\r\n  }) ?? []\r\n\r\nconst parseJSON = (json) => {\r\n  try {\r\n    return JSON.parse(json)\r\n  } catch {\r\n    return null\r\n  }\r\n}\r\n  \r\nmessageJSON = parseJSON(messageJSON?.value)\r\n\r\nconst withEmbed =\r\n  embedTitle ||\r\n  embedDescription ||\r\n  embedTimestamp ||\r\n  embedColor ||\r\n  embedAuthorName ||\r\n  embedAuthorIconURL ||\r\n  embedFields.length ||\r\n  embedImageURL ||\r\n  embedThumbnailURL ||\r\n  embedFooterText\r\n\r\nconst messageData = messageJSON ?? {\r\n  content: messageContent?.value,\r\n  embeds: withEmbed ? [\r\n    {\r\n      title: embedTitle?.value,\r\n      description: embedDescription?.value,\r\n      url: embedURL?.value,\r\n      timestamp: new Date(embedTimestamp?.value).getTime(),\r\n      color: embedColor ? parseInt(embedColor.value.replace('#', ''), 16) : null,\r\n      author: {\r\n        name: embedAuthorName?.value,\r\n        url: embedAuthorURL?.value,\r\n        icon_url: embedAuthorIconURL?.value\r\n      },\r\n      fields: embedFields,\r\n      image: embedImageURL ? { url: embedImageURL?.value } : null,\r\n      thumbnail: embedThumbnailURL ? { url: embedThumbnailURL?.value } : null,\r\n      footer: {\r\n        text: embedFooterText?.value,\r\n        icon_url: embedFooterIconURL?.value\r\n      }\r\n    }\r\n  ] : []\r\n}\r\n\r\nconst message = await sendMessage(messageChannel?.value || channel.id, messageData)\r\nawait reply({ content: message.url, ephemeral: true })"
+		}
+	]
+}
