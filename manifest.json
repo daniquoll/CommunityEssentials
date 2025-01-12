@@ -1,8 +1,12 @@
 {
-    "name": "Plugin name",
-    "name_l10ns": {},
-    "summary": "A short description for your plugin",
-    "summary_l10ns": {},
+    "name": "Community essentials",
+    "name_l10ns": {
+        "ru": "Нужды сообществ"
+    },
+    "summary": "Useful features for your Discord community.",
+    "summary_l10ns": {
+        "ru": "Полезные функции для вашего сообщества Discord."
+    },
     "version": "1.0.0",
     "mv": 1
 }
